@@ -17,24 +17,25 @@ jobs:
           start: npm start
 
   deploy-to-dev:
-    needs: cypress-run
     runs-on: ubuntu-latest
     environment: dev
+    needs: cypress-run
     steps:
       - name: Checkout
         uses: actions/checkout@v3.5.2
       - name: Deploy to dev
         run: |
           echo "Deploying to dev environment..."
-          # Build your project artifacts
+          # Install dependencies and build your project artifacts
+          npm ci
           npm run build
           # Deploy your artifacts to your dev environment
-          my-deployment-tool deploy --env dev --artifact ./dist
+          my-deployment-tool deploy --env dev --artifact ./build
 
   deploy-to-prod:
-    needs: cypress-run
     runs-on: ubuntu-latest
     environment: prod
+    needs: deploy-to-dev
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
@@ -42,7 +43,8 @@ jobs:
       - name: Deploy to prod
         run: |
           echo "Deploying to prod environment..."
-          # Build your project artifacts
+          # Install dependencies and build your project artifacts
+          npm ci
           npm run build
           # Deploy your artifacts to your prod environment
-          my-deployment-tool deploy --env prod --artifact ./dist
+          my-deployment-tool deploy --env prod --artifact ./build
