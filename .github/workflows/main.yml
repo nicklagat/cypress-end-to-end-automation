@@ -16,26 +16,28 @@ jobs:
         with: 
           start: npm start
 
-  deploy-to-dev:
+  deploy-to-uat:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: uat
     needs: cypress-run
     steps:
       - name: Checkout
         uses: actions/checkout@v3.5.2
-      - name: Deploy to dev
+      - name: Deploy to uat
         run: |
-          echo "Deploying to dev environment..."
+          echo "Deploying to uat environment..."
+          # Set the path to the deployment tool
+          export PATH=$PATH:/path/to/my-deployment-tool
           # Install dependencies and build your project artifacts
           npm ci
           npm run build
-          # Deploy your artifacts to your dev environment
-          my-deployment-tool deploy --env dev --artifact ./build
+          # Deploy your artifacts to your uat environment
+          my-deployment-tool deploy --env uat --artifact ./build
 
   deploy-to-prod:
     runs-on: ubuntu-latest
     environment: prod
-    needs: deploy-to-dev
+    needs: deploy-to-uat
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
@@ -43,6 +45,8 @@ jobs:
       - name: Deploy to prod
         run: |
           echo "Deploying to prod environment..."
+          # Set the path to the deployment tool
+          export PATH=$PATH:/path/to/my-deployment-tool
           # Install dependencies and build your project artifacts
           npm ci
           npm run build
